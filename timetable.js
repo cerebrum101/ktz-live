@@ -9,7 +9,7 @@ for(const [station,id] of stations){try{
   const values=cells.map(x=>x.replace(/^[^:]{0,40}:\s*/,'').trim());const number=values[3].match(/\b\d{1,4}[А-ЯA-Z]?\b/u)?.[0];if(!number)continue;
   trains.push({station,number,departure:values[0].match(/\d{2}:\d{2}/)?.[0]||'',duration:values[1].match(/\d{2}:\d{2}/)?.[0]||'',arrival:values[2].match(/\d{2}:\d{2}/)?.[0]||'',from:values[4],to:values[5],frequency:values[6]});
  }
-}catch(e){console.error('station fetch failed',station,e.message)}}
+}catch(e){throw new Error(`station fetch failed: ${station}: ${e.message}`)}}
 if(!trains.length||trains.some(t=>!t.number||!t.from||!t.to||!t.departure||!t.arrival))throw Error('invalid station timetable');
 fs.writeFileSync('docs/timetable.json',JSON.stringify({date,updated:new Date().toISOString(),stations:stations.map(x=>x[0]),source:'https://bilet.railways.kz/sale/default/station/schedule',trains}));
 console.log(date,trains.length,'published station timetable rows');
