@@ -1,5 +1,5 @@
 const fs=require('node:fs'),cp=require('node:child_process');
-const stations=[['Алматы 2','2700001'],['Астана-1','2708000']];
+const stations=[['Алматы 2','2700001'],['Астана-1','2708000'],['Шымкент','2700770'],['Қарағанды Пасс','2708950'],['Ақтөбе-1','2704600']];
 const date=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Almaty',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date()).replaceAll('/','-');
 const clean=s=>s.replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/\s+/g,' ').trim();
 const trains=[];
@@ -11,5 +11,5 @@ for(const [station,id] of stations){try{
  }
 }catch(e){console.error('station fetch failed',station,e.message)}}
 if(!trains.length||trains.some(t=>!t.number||!t.from||!t.to||!t.departure||!t.arrival))throw Error('invalid station timetable');
-fs.writeFileSync('docs/timetable.json',JSON.stringify({date,updated:new Date().toISOString(),source:'https://bilet.railways.kz/sale/default/station/schedule',trains}));
+fs.writeFileSync('docs/timetable.json',JSON.stringify({date,updated:new Date().toISOString(),stations:stations.map(x=>x[0]),source:'https://bilet.railways.kz/sale/default/station/schedule',trains}));
 console.log(date,trains.length,'published station timetable rows');
