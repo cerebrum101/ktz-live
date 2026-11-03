@@ -1,0 +1,1 @@
+{"scripts":{"start":"node server.js","test":"g++ -std=c++17 -include algorithm core.cpp -o /tmp/ktz-core && node test.js"},"engines":{"node":">=18"}}
