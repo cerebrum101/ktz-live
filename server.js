@@ -4,7 +4,7 @@ const port=process.env.PORT||3000;
 http.createServer((req,res)=>{
  if(req.url==='/api/trains'){
   const now=Date.now()/1000, day=86400, start=Math.floor(now/day)*day;
-  const trains=routes.map((r,i)=>{const depart=start+((i*4+2)%24)*3600,arrive=depart+(i+3)*3600; if(now<depart||now>arrive)return null;
+  const trains=routes.map((r,i)=>{const depart=start-((i*3+2)%12)*3600,arrive=depart+24*3600;
    const p=cp.execFileSync('./core',[...r.slice(2).map(String),String(depart),String(arrive),String(now)],{encoding:'utf8'}).trim().split(' ').map(Number);
    return {id:`DEMO-${i+1}`,from:r[0],to:r[1],lat:p[0],lon:p[1],arrival:new Date(arrive*1000).toISOString(),source:'simulation'};}).filter(Boolean);
   res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');res.end(JSON.stringify({updated:new Date().toISOString(),trains}));return;
