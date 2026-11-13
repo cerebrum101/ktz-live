@@ -1,21 +1,13 @@
-const fs=require('node:fs'),cp=require('node:child_process');
+const fs=require('node:fs'),cp=require('node:child_process'),{collect}=require('./timetable-parser');
 const stations=[['Алматы 2','2700001',43.2742,76.9393],['Астана-1','2708000',51.1815,71.4115],['Шымкент','2700770',42.312,69.575],['Қарағанды Пасс','2708950',49.8019,73.105],['Ақтөбе-1','2704600',50.2904,57.1546],['Нурлы жол','2700152',51.125,71.514],['Кокшетау 1','2708800',53.2884,69.4224],['Павлодар','2708900',52.2906,76.958],['Семей','2700900',50.411,80.25],['Костанай','2708700',53.223,63.635],['Кызылорда','2704999',44.837,65.51],['Туркестан','2700860',43.295,68.245],['Атырау','2704830',47.107,51.922],['Мангистау','2704807',43.691,51.207],['Орал','2704810',51.235,51.39],['Оскемен-1','2700730',49.952,82.608],['Тараз','2700710',42.9,71.366],['Шу','2700780',43.599,73.761],['Петропавловск','2040500',54.85444,69.165,3],['Жезказган','2708930',47.78954,67.67843],['Балхаш 2','2708790',46.85612,74.98722],['Бейнеу','2704817',45.32211,55.19662],['Шалкар','2704840',47.83408,59.62203],['Кандыагаш','2704870',49.47058,57.42743],['Кульсары','2704822',46.94796,53.93873],['Арыс 1','2700680',42.41928,68.79353],['Сарыагаш','2700116',41.46507,69.14757],['Достык','2700393',45.25286,82.48665],['Аягоз','2700690',47.9631,80.44366],['Актогай','2700670',46.95306,79.68175]];
+stations.push(['Алматы 1','2700002',43.34145,76.94917],['Аркалык','2708877',50.24228,66.90699],['Талдыкорган','2700108',45.0032,78.37693],['Риддер','2700840',50.34877,83.50718],['Атбасар','2708880',51.80536,68.3473],['Ерейментау','2709979',51.62475,73.10111],['Темиртау','2709984',50.07875,72.92711],['Акадыр','2708921',48.26336,72.85574],['Сексеул','2704888',47.08412,61.15469],['Мойынты','2708970',47.21832,73.36037],['Саяк','2708974',46.91121,77.36179],['Сары-Шаган','2700917',46.1195,73.6056],['Отар','2700750',43.54003,75.21189],['Узень','2704804',43.32098,52.85378],['Курорт-Боровое','2708850',52.92102,70.18166]);
 const dateAt=t=>new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Almaty',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(t)).replaceAll('/','-');
 const now=Date.now(),date=dateAt(now),yesterday=dateAt(now-86400000),tomorrow=dateAt(now+86400000);
-const clean=s=>s.replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/\s+/g,' ').trim();
-function fetchDay(date){const trains=[];
-for(const [station,id] of stations){try{
- const html=cp.execFileSync('curl',['-fsSLG','--max-time','20','https://bilet.railways.kz/sale/default/station/schedule','--data-urlencode',`station_schedule_form[station]=${id}`,'--data-urlencode',`station_schedule_form[date]=${date}`],{encoding:'utf8'});
- for(const row of html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)){const cells=[...row[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(x=>clean(x[1]));if(cells.length!==7)continue;
-  const values=cells.map(x=>x.replace(/^[^:]{0,40}:\s*/,'').trim());const number=values[3].match(/\d{1,4}[А-ЯЁA-Z]?/u)?.[0];if(!number)continue;
-  trains.push({station,number,departure:values[0].match(/\d{2}:\d{2}/)?.[0]||'',duration:values[1].match(/(?:\d+\.)?\d{2}:\d{2}/)?.[0]||'',arrival:values[2].match(/\d{2}:\d{2}/)?.[0]||'',from:values[4],to:values[5],frequency:values[6]});
- }
-}catch(e){throw new Error(`station fetch failed: ${station}: ${e.message}`)}}
-if(!trains.length||trains.some(t=>!t.number||!t.from||!t.to||!t.departure||!t.arrival||!t.duration))throw Error('invalid station timetable');return trains;}
+function fetchDay(date){const result=collect(stations,date,id=>cp.execFileSync('curl',['-fsSLG','--max-time','15','--retry','1','--retry-all-errors','--retry-delay','1','https://bilet.railways.kz/sale/default/station/schedule','--data-urlencode',`station_schedule_form[station]=${id}`,'--data-urlencode',`station_schedule_form[date]=${date}`],{encoding:'utf8'}));if(result.failed.length)console.error(date,'unavailable stations:',result.failed.join(', '));return result;}
 let old={};try{old=JSON.parse(fs.readFileSync('docs/timetable.json','utf8'))}catch(e){if(e.code!=='ENOENT')throw e}
 const previous=(old.days||[{date:old.date,trains:old.trains}]).find(x=>x.date===yesterday&&Array.isArray(x.trains));
-const trains=fetchDay(date),days=[...(previous?[previous]:[]),{date,trains}];
+const today=fetchDay(date),trains=today.trains,days=[...(previous?[previous]:[]),today];
 const hour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Almaty',hour:'2-digit',hourCycle:'h23'}).format(new Date(now)));
-if(hour>=20)days.push({date:tomorrow,trains:fetchDay(tomorrow)});
+if(hour>=20){try{days.push(fetchDay(tomorrow))}catch(e){console.error('next day unavailable:',e.message)}}
 fs.writeFileSync('docs/timetable.json',JSON.stringify({date,updated:new Date().toISOString(),stations:stations.map(([name,id,lat,lon,utcOffset])=>({name,lat,lon,...(utcOffset?{utcOffset}:{})})),source:'https://bilet.railways.kz/sale/default/station/schedule',trains,days}));
 console.log(date,days.map(x=>`${x.date}: ${x.trains.length}`).join(', '),'published station timetable rows');
