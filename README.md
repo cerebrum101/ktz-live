@@ -1,6 +1,6 @@
 # KTZ Live prototype
 
-The hosted map estimates positions using matched timetable rows from 18 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule, flags snapshots more than two hours old, and hides estimates without a current-day snapshot. Coverage is partial, lines between stations are straight approximations, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
+The hosted map estimates positions using matched timetable rows from 30 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule, flags snapshots more than two hours old, and hides estimates without a current-day snapshot. Coverage is partial, lines between stations are straight approximations, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
 
 Run: `g++ -std=c++17 -include algorithm -O2 core.cpp -o core && npm start`.
 
@@ -12,4 +12,4 @@ The [Kazakhstan open data portal](https://data.egov.kz/datasets/view?index=list_
 
 Next: obtain permitted dated timetable and intermediate stops; use rail geometry and stop dwell times, add provenance and uncertainty to each train. Enable GPS only after the provider's technical access and reuse terms are confirmed.
 
-The public ticket-site board gives timetable rows without a stable trip identifier. The estimator conservatively matches full train number, endpoints and computed destination arrival timestamp; rejects duplicate or inconsistent rows; and estimates only between matching sampled station events on the same service date. Matching is heuristic and requires further operator validation. It cannot establish all active trains. The refresh job retains the previous snapshot on fetch or parsing failure. Reuse terms for the ticket-site data have not been confirmed.
+The public ticket-site board gives timetable rows without a stable trip identifier. The estimator conservatively matches full train number, endpoints and computed destination arrival timestamp, rejects duplicate or inconsistent rows, and joins sampled station events across adjacent dates when available. Matching is heuristic and requires further operator validation. It cannot establish all active trains. The refresh job retains the previous snapshot on fetch or parsing failure. Reuse terms for the ticket-site data have not been confirmed.
