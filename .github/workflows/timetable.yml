@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: node test-model.js
       - run: node timetable.js
       - run: |
           git config user.name 'ktz-live-bot'

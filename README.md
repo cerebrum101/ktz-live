@@ -1,6 +1,6 @@
 # KTZ Live prototype
 
-Responsive Kazakhstan rail dashboard with a C++ trajectory estimator. The hosted page now displays a dated timetable snapshot from five sampled stations on KTZ's public ticket site, refreshed twice hourly. Station markers represent timetable coverage, not train positions. No live GPS or complete nationwide timetable is claimed. The local server still contains a separate synthetic trajectory demo.
+The hosted map estimates positions using matched timetable rows from 18 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule and hides train estimates if the snapshot is more than two hours old. Coverage is partial, lines between stations are straight approximations, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
 
 Run: `g++ -std=c++17 -include algorithm -O2 core.cpp -o core && npm start`.
 
@@ -12,4 +12,4 @@ The [Kazakhstan open data portal](https://data.egov.kz/datasets/view?index=list_
 
 Next: obtain permitted dated timetable and intermediate stops; use rail geometry and stop dwell times, add provenance and uncertainty to each train. Enable GPS only after the provider's technical access and reuse terms are confirmed.
 
-The public ticket-site board gives timetable rows but no stable trip identifier across sampled stations. Train numbers repeat across days and sometimes directions, so those rows cannot yet be joined into a reliable live trajectory. The refresh job checks row validity and retains the previous snapshot if parsing fails.
+The public ticket-site board gives timetable rows without a stable trip identifier. The estimator conservatively matches full train number, endpoints and computed destination arrival timestamp; rejects duplicate or inconsistent rows; and estimates only between matching sampled station events on the same service date. Matching is heuristic and requires further operator validation. It cannot establish all active trains. The refresh job retains the previous snapshot on fetch or parsing failure. Reuse terms for the ticket-site data have not been confirmed.
