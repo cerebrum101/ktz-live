@@ -1,6 +1,6 @@
 # KTZ Live prototype
 
-The hosted map estimates positions using matched timetable rows from 18 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule and hides train estimates if the snapshot is more than two hours old. Coverage is partial, lines between stations are straight approximations, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
+The hosted map estimates positions using matched timetable rows from 18 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule, flags snapshots more than two hours old, and hides estimates without a current-day snapshot. Coverage is partial, lines between stations are straight approximations, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
 
 Run: `g++ -std=c++17 -include algorithm -O2 core.cpp -o core && npm start`.
 
