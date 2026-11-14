@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),{segments,position,dayStart,advance,advanceAcross,capPresent,name}=require('./docs/model');
+const assert=require('node:assert/strict'),{segments,position,pathAvailable,dayStart,advance,advanceAcross,capPresent,name}=require('./docs/model');
 const data={date:'13-11-2026',stations:[{name:'A',lat:51,lon:71},{name:'B',lat:50,lon:73}],trains:[{station:'A',number:'106Т',from:'P',to:'M',departure:'06:45',duration:'17:00',arrival:'23:45'},{station:'B',number:'106Т',from:'P',to:'M',departure:'10:08',duration:'13:37',arrival:'23:45'}]};
 assert.equal(segments(data).length,1);assert.equal(segments({...data,trains:[...data.trains,{...data.trains[1]}]}).length,0);assert.equal(segments({...data,trains:[data.trains[0],{...data.trains[1],arrival:'23:44'}]}).length,0);
 const overnight={...data,trains:[{...data.trains[0],departure:'23:57',duration:'2.05:53',arrival:'05:50'},{...data.trains[1],departure:'18:21',duration:'11:29',arrival:'05:50'}]};assert.equal(segments(overnight).length,0);
@@ -15,3 +15,5 @@ const start=dayStart('14-11-2026');assert.equal(new Date(start).toISOString(),'2
 assert.deepEqual(advanceAcross(start+86300000,1000,300,['14-11-2026','15-11-2026']),{time:start+86600000,ended:false});assert.deepEqual(advanceAcross(start+86300000,1000,300,['14-11-2026','16-11-2026']),{time:start+86400000-1,ended:true});assert.deepEqual(advanceAcross(start+2*86400000-100,1000,1,['14-11-2026','15-11-2026']),{time:start+2*86400000-1,ended:true});
 
 assert.equal(capPresent(200,100),100);assert.equal(capPresent(50,100),50);assert.equal(name("Қызылорда"),name("Кызылорда"));assert.equal(name("ШІДЕРТІ"),name("ШИДЕРТИ"));
+
+assert(pathAvailable(a,b,paths));assert(pathAvailable(b,a,paths));assert(!pathAvailable({...a,lat:5},b,paths));assert(!pathAvailable(a,b,{}));
