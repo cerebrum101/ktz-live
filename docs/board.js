@@ -24,7 +24,7 @@ function draw(force=false){
  slider.value=minutes;slider.disabled=false;play.disabled=false;live.disabled=!hasToday||!fresh;
  $('#clock').textContent=String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');daySelect.value=day;$('#mode').textContent=followNow?'SCHEDULE / NOW':playing?'SCHEDULE / PLAYING':'SCHEDULE / PAUSED';
  $('#feed').textContent=(refreshFailed?'Refresh failed · ':!fresh?'Older timetable · ':failed.size?'Partial update · ':age>7200000?'Schedule may be outdated · ':'Timetable updated ')+new Date(data.updated).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});$('.pulse').style.background=(refreshFailed||!fresh||failed.size||age>7200000)?'#b77c23':'#13a883';
- $('#updated').textContent=(data.stations.length-failed.size)+'/'+data.stations.length+' stations in snapshot';
+ $('#station-total').textContent=snapshot?.stationCount??'selected';$('#updated').textContent=Number.isInteger(snapshot?.stationCount)?(snapshot.stationCount-failed.size)+'/'+snapshot.stationCount+' stations in snapshot':'Snapshot station count unavailable';
  const active=legs.filter(t=>t.start<=time&&time<t.end),visible=active.filter(t=>[t.number,t.from,t.to,t.a.name,t.b.name].join(' ').toLocaleLowerCase().includes(query));$('#count').textContent=active.length;
  const key=day+'|'+query+'|'+visible.map(t=>t.key+'|'+t.start).join(';');
  if(force||key!==shown){shown=key;markers.clearLayers();drawn.clear();updateStations(failed);const list=$('#list');list.replaceChildren();

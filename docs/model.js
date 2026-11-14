@@ -1,6 +1,6 @@
 (function(root){
 function minute(s){const m=/^(?:(\d+)\.)?(\d+):(\d{2})$/.exec(s);return m?Number(m[1]||0)*1440+Number(m[2])*60+Number(m[3]):NaN}
-function name(s){return s.toUpperCase().replace(/Қ/g,'К').replace(/Ғ/g,'Г').replace(/Ң/g,'Н').replace(/Ө/g,'О').replace(/Ә/g,'А').replace(/Ұ|Ү/g,'У').replace(/І/g,'И').replace(/ПАСС/g,'П').replace(/[^А-ЯЁA-Z0-9]/g,'').replace('КАРАГАНДЫП','КАРАГАНДП').replace('ПЕТРОПАВЛОВСК','ПЕТРОПАВЛ').replace('КУРОРТБОРОВОЕ','КУРОРТБОР').replace('ТАЛДЫКОРГАН','ТАЛДЫКОРГА').replace('ЖАНАОЗЕН','УЗЕН').replace('УЗЕНЬ','УЗЕН')}
+function name(s){return s.toUpperCase().replace(/Қ/g,'К').replace(/Ғ/g,'Г').replace(/Ң/g,'Н').replace(/Ө/g,'О').replace(/Ә/g,'А').replace(/Ұ|Ү/g,'У').replace(/І/g,'И').replace(/ПАСС/g,'П').replace(/[^А-ЯЁA-Z0-9]/g,'').replace('КАРАГАНДЫП','КАРАГАНДП').replace('ПЕТРОПАВЛОВСК','ПЕТРОПАВЛ').replace('КУРОРТБОРОВОЕ','КУРОРТБОР').replace('ТАЛДЫКОРГАН','ТАЛДЫКОРГА').replace('ЖАНАОЗЕН','УЗЕН').replace('УЗЕНЬ','УЗЕН').replace('ПРЕСНОГОРЬКОВСКАЯ','ПРЕСНОГОР').replace('КАЗЫБЕКБЕК','КАЗЫБЕКБЕ')}
 function dayStart(date){const [day,month,year]=date.split('-').map(Number);return Date.UTC(year,month-1,day)-5*3600000}
 function advance(time,elapsed,speed,start){return Math.min(start+86400000-1,time+Math.max(0,elapsed)*speed)}
 function advanceAcross(time,elapsed,speed,dates){const days=dates.map(dayStart).sort((a,b)=>a-b),start=days.find(d=>time>=d&&time<d+86400000);if(start===undefined)return {time,ended:true};let end=start+86400000;while(days.includes(end))end+=86400000;const next=time+Math.max(0,elapsed)*speed;return {time:Math.min(next,end-1),ended:next>=end}}
@@ -10,7 +10,9 @@ function segments(data){
  const days=data.days||[{date:data.date,trains:data.trains}];
  for(const snapshot of days){const [day,month,year]=snapshot.date.split('-').map(Number),midnight=Date.UTC(year,month-1,day);
  for(const row of snapshot.trains){const p=places.get(row.station),d=minute(row.departure),duration=minute(row.duration),arrival=minute(row.arrival);if(!p||name(row.station)===name(row.to)||!Number.isFinite(d)||!Number.isFinite(duration)||!Number.isFinite(arrival)||d>=1440||duration<1||arrival>=1440)continue;
-  const departure=midnight-(p.utcOffset??5)*3600000+d*60000,target=departure+duration*60000,destOffset=name(row.to)==='ПЕТРОПАВЛ'?3:5,destClock=new Date(target+destOffset*3600000);if(destClock.getUTCHours()*60+destClock.getUTCMinutes()!==arrival)continue;
+  const departure=midnight-(p.utcOffset??5)*3600000+d*60000,target=departure+duration*60000,utc=new Date(target),clockUTC=utc.getUTCHours()*60+utc.getUTCMinutes(),offset=(arrival-clockUTC+1440)%1440;
+  // shortcut: accept whole-hour UTC+3 to UTC+8 clocks; use station timezone metadata when available.
+  if(offset%60!==0||offset<180||offset>480)continue;
   const key=[row.number,row.from,row.to,target].join('|'),event={...row,place:p,time:departure,target};if(!groups.has(key))groups.set(key,[]);groups.get(key).push(event);
  }}
  const out=[];for(const [key,events] of groups){if(new Set(events.map(e=>e.station)).size!==events.length||new Set(events.map(e=>e.time)).size!==events.length)continue;events.sort((a,b)=>a.time-b.time);function add(a,b,quality){const hours=(b.time-a.time)/3600000,km=111*Math.hypot(b.place.lat-a.place.lat,(b.place.lon-a.place.lon)*Math.cos(a.place.lat*Math.PI/180));if(hours<=0||km<5||km/hours>160)return;out.push({key,number:a.number,from:a.from,to:a.to,a:a.place,b:b.place,start:a.time,end:b.time,arrival:a.target,quality})}for(let i=1;i<events.length;i++)add(events[i-1],events[i],'matched');const last=events[events.length-1],destination=destinations.get(name(last.to));if(destination)add(last,{place:destination,time:last.target},'coarse')}
