@@ -79,7 +79,7 @@ def build(rail, stations):
                 if km(points[-1], rail.nodes[n]) >= 1:
                     points.append(rail.nodes[n])
             points.append(rail.nodes[nodes[-1]])
-            paths[name + '|' + dest] = [[round(x, 5), round(y, 5)] for x, y in points]
+            paths[name + '|' + dest] = [[round(x, 4), round(y, 4)] for x, y in points]
     return paths, snapped
 
 if __name__ == '__main__':

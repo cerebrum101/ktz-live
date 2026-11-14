@@ -12,7 +12,7 @@ fetch('services-catalog.json?v=1').then(r=>r.ok?r.json():Promise.reject()).then(
 fetch('stations-osm.json?v=1').then(r=>r.ok?r.json():Promise.reject()).then(d=>{mappedStations=d.stations||[];$('#station-coverage').textContent=mappedStations.length+' OSM station and halt features · zoom in to see';drawStations();draw(true)}).catch(()=>{$('#station-coverage').textContent='Station layer unavailable'});
 map.on('zoomend',drawStations);
 function drawStations(){allStationsLayer.clearLayers();if(map.getZoom()<7)return;for(const s of mappedStations){const label=document.createElement('span');label.textContent=s.name;L.circleMarker([s.lat,s.lon],{radius:2.5,color:'#617670',weight:1,fillColor:'#f9f9f5',fillOpacity:1}).bindTooltip(label).addTo(allStationsLayer)}}
-fetch('rail-routes.json?v=100').then(r=>r.ok?r.json():null).then(d=>{if(d?.paths){paths=d.paths;draw(true)}}).catch(()=>{});
+fetch('rail-routes.json?v=101').then(r=>r.ok?r.json():null).then(d=>{if(d?.paths){paths=d.paths;draw(true)}}).catch(()=>{});
 function stop(){playing=false;lastFrame=0;play.innerHTML='▶ <span>Play</span>';play.setAttribute('aria-label','Play timetable')}
 function setNow(){stop();$('#timeline-note').textContent='Playback stops at the present. Positions are estimates.';const current=Date.now(),today=dateAt(current),hasToday=(data?.days||[]).some(d=>d.date===today)||data?.date===today,age=current-Date.parse(data?.updated);if(!hasToday||age>=86400000||age< -60000){followNow=false;draw(true);return}day=today;time=current;followNow=true;draw(true)}
 live.addEventListener('click',setNow);
