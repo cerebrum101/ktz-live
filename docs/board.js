@@ -8,7 +8,7 @@ let data=null,legs=[],unlocated=[],paths={},query='',day='',time=0,playing=false
 const drawn=new Map();
 function availableDays(){return (data?.days||[]).filter(d=>Array.isArray(d.trains)).map(d=>d.date).filter(d=>trajectory.dayStart(d)<=Date.now()).sort((a,b)=>trajectory.dayStart(a)-trajectory.dayStart(b))}
 function updateDays(){const dates=availableDays();if(!dates.length&&data?.date)dates.push(data.date);const selected=dates.includes(day);daySelect.replaceChildren(...dates.map(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;return o}));if(!selected&&dates.length){day=dates[dates.length-1];time=trajectory.dayStart(day)+12*3600000;followNow=false;stop()}daySelect.disabled=!dates.length;daySelect.value=day}
-fetch('rail-routes.json?v=64').then(r=>r.ok?r.json():null).then(d=>{if(d?.paths){paths=d.paths;draw(true)}}).catch(()=>{});
+fetch('rail-routes.json?v=69').then(r=>r.ok?r.json():null).then(d=>{if(d?.paths){paths=d.paths;draw(true)}}).catch(()=>{});
 function stop(){playing=false;lastFrame=0;play.innerHTML='▶ <span>Play</span>';play.setAttribute('aria-label','Play timetable')}
 function setNow(){stop();$('#timeline-note').textContent='Playback stops at the present. Positions are estimates.';const current=Date.now(),today=dateAt(current),hasToday=(data?.days||[]).some(d=>d.date===today)||data?.date===today,age=current-Date.parse(data?.updated);if(!hasToday||age>=86400000||age< -60000){followNow=false;draw(true);return}day=today;time=current;followNow=true;draw(true)}
 live.addEventListener('click',setNow);
