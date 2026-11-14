@@ -2,6 +2,8 @@
 
 The hosted map estimates positions using matched timetable rows from 64 sampled stations on KTZ's public ticket site. Station IDs were checked against the ticket site's station search; coordinates were checked against OpenStreetMap. Its timeline can play, pause, scrub and return to the current time, at several speeds; playback crosses midnight through consecutive snapshot days in Kazakhstan time and stops at gaps. Some international services that appear on the sampled boards are included, but coverage has not been established and foreign legs outside the sampled stations are not tracked. It refreshes on a best-effort schedule and flags old snapshots. When there is no fresh current-day snapshot, the map offers dated historical playback instead of a current-time view. When available, positions follow inferred shortest paths through OpenStreetMap railway data; otherwise they use straight lines. Paths are not verified train routes. Coverage is partial, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
 
+Scheduled journeys without enough information for a position are listed separately; they may already be outside Kazakhstan.
+
 Run: `g++ -std=c++17 -include algorithm -O2 core.cpp -o core && npm start`.
 
 ## Data access finding (3 November 2026)

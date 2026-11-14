@@ -3,3 +3,4 @@
 :root .timing{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#526962;margin-top:5px}@media(max-width:720px){.legend{bottom:205px}}
 .leaflet-container .train-icon{box-shadow:0 0 0 1px #173d46;line-height:12px}
 .legend{top:100px;bottom:auto}@media(max-width:720px){.legend{top:82px;bottom:auto}.leaflet-control-zoom{margin-bottom:0!important}}
+.unknown-summary{font-size:11px;color:#75451d;margin-top:6px}.unknown-heading{font-size:10px;font-weight:600;color:#75451d;padding:12px 0 5px;border-bottom:1px solid #cbd6d2}.unknown-train{cursor:default}.unknown-train .tag{color:#75451d}
