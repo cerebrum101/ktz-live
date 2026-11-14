@@ -2,6 +2,7 @@
 
 ## Verified
 
+- Public stop-by-stop timetables do exist: Yandex lists [train 077Т Алматы–Мангистау](https://rasp.yandex.kz/thread/R_077T_111?departure_from=2026-09-08+04%3A18%3A00&station_from=9619416) with 44 stops, although that particular indexed version is dated September 2026. [Advantour](https://www.advantour.com/rus/kazakhstan/trains/timetable.htm) publishes a route index; several displayed durations are inconsistent with the displayed day offsets, so it is a discovery source, not a verified current trip inventory. Yandex's API terms restrict processing and altering data; neither source has been established as a redistributable nationwide feed.
 - Kaspi's rail-ticket service was launched through a direct KTZ–Kaspi IT integration, not a documented anonymous public feed: https://rail-news.kz/kz/passenger-transportation/9052-poyyz-biletterin-endi-kaspi-kz-zh-ktemesi-ar-yly-satyp-alu-a-bolady.html
 - KTZ's computing centre publishes an information-services contract and application, and lists a marketing contact: https://iservice.railways.kz/ . Its public description refers to rolling-stock location; whether it covers passenger-train GPS and third-party map publication needs confirmation.
 - The official tracking site's robots notice disallows automated `/api/` collection and republication: https://tablo-railways.kz/robots.txt . Do not use its internal endpoints for this hosted map without written access.
