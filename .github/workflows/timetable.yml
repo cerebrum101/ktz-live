@@ -21,4 +21,4 @@ jobs:
           git config user.name 'ktz-live-bot'
           git config user.email 'actions@users.noreply.github.com'
           git add docs/timetable.json docs/services-catalog.json
-          git diff --cached --quiet || (git commit -m 'Refresh public timetables' && git push)
+          git diff --cached --quiet || (git commit -m 'Refresh public timetables' && git pull --rebase origin main && git push)
