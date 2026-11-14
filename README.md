@@ -1,6 +1,6 @@
 # KTZ Live prototype
 
-The hosted map estimates positions using matched timetable rows from 45 sampled stations on KTZ's public ticket site. It refreshes on a best-effort schedule, flags snapshots more than two hours old, and hides estimates without a current-day snapshot. When available, positions follow inferred shortest paths through OpenStreetMap railway data; otherwise they use straight lines. Paths are not verified train routes. Coverage is partial, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
+The hosted map estimates positions using matched timetable rows from 45 sampled stations on KTZ's public ticket site. Its timeline can play, pause, scrub and return to the current time, at several speeds; playback covers the selected snapshot day in Kazakhstan time. It refreshes on a best-effort schedule and flags old snapshots. When there is no fresh current-day snapshot, the map offers dated historical playback instead of a current-time view. When available, positions follow inferred shortest paths through OpenStreetMap railway data; otherwise they use straight lines. Paths are not verified train routes. Coverage is partial, and delays, cancellations and GPS are not known. The local server is a separate synthetic trajectory demo.
 
 Run: `g++ -std=c++17 -include algorithm -O2 core.cpp -o core && npm start`.
 
