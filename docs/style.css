@@ -3,3 +3,5 @@
 .station-coverage{font-size:11px;color:#68766e;margin-top:7px}
 
 .service-catalog #services{max-height:180px;overflow:auto}.service-row{padding:6px 0;border-top:1px solid var(--line);line-height:1.4}
+
+.legend{flex-wrap:wrap;max-width:calc(100% - 80px)}.legend label{margin-left:7px;white-space:nowrap;cursor:pointer}.legend-label{color:#6d7a73}.direction{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:4px}.north{background:#286b98}.east{background:#b65b35}.south{background:#97712e}.west{background:#6d568e}.train-icon.north{background:#286b98;box-shadow:0 0 0 1px #286b98}.train-icon.east{background:#b65b35;box-shadow:0 0 0 1px #b65b35}.train-icon.south{background:#97712e;box-shadow:0 0 0 1px #97712e}.train-icon.west{background:#6d568e;box-shadow:0 0 0 1px #6d568e}

@@ -17,3 +17,8 @@ assert.deepEqual(advanceAcross(start+86300000,1000,300,['14-11-2026','15-11-2026
 assert.equal(capPresent(200,100),100);assert.equal(capPresent(50,100),50);assert.equal(name("Қызылорда"),name("Кызылорда"));assert.equal(name("ШІДЕРТІ"),name("ШИДЕРТИ"));
 
 assert(pathAvailable(a,b,paths));assert(pathAvailable(b,a,paths));assert(!pathAvailable({...a,lat:5},b,paths));assert(!pathAvailable(a,b,{}));
+
+assert.equal(require('./docs/model.js').direction({lat:50,lon:70},{lat:51,lon:70}),'north');
+assert.equal(require('./docs/model.js').direction({lat:50,lon:70},{lat:49,lon:70}),'south');
+assert.equal(require('./docs/model.js').direction({lat:50,lon:70},{lat:50,lon:72}),'east');
+assert.equal(require('./docs/model.js').direction({lat:50,lon:70},{lat:50,lon:68}),'west');

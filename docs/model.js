@@ -1,6 +1,7 @@
 (function(root){
 function minute(s){const m=/^(?:(\d+)\.)?(\d+):(\d{2})$/.exec(s);return m?Number(m[1]||0)*1440+Number(m[2])*60+Number(m[3]):NaN}
 function name(s){return s.toUpperCase().replace(/Қ/g,'К').replace(/Ғ/g,'Г').replace(/Ң/g,'Н').replace(/Ө/g,'О').replace(/Ә/g,'А').replace(/Ұ|Ү/g,'У').replace(/І/g,'И').replace(/ПАСС/g,'П').replace(/[^А-ЯЁA-Z0-9]/g,'').replace('КАРАГАНДЫП','КАРАГАНДП').replace('ПЕТРОПАВЛОВСК','ПЕТРОПАВЛ').replace('КУРОРТБОРОВОЕ','КУРОРТБОР').replace('ТАЛДЫКОРГАН','ТАЛДЫКОРГА').replace('ЖАНАОЗЕН','УЗЕН').replace('УЗЕНЬ','УЗЕН').replace('ПРЕСНОГОРЬКОВСКАЯ','ПРЕСНОГОР').replace('КАЗЫБЕКБЕК','КАЗЫБЕКБЕ')}
+function direction(a,b){const lat=b.lat-a.lat,lon=(b.lon-a.lon)*Math.cos((a.lat+b.lat)*Math.PI/360);return Math.abs(lat)>=Math.abs(lon)?(lat>=0?'north':'south'):(lon>=0?'east':'west')}
 function dayStart(date){const [day,month,year]=date.split('-').map(Number);return Date.UTC(year,month-1,day)-5*3600000}
 function capPresent(time,now){return Math.min(time,now)}
 function advance(time,elapsed,speed,start){return Math.min(start+86400000-1,time+Math.max(0,elapsed)*speed)}
@@ -20,5 +21,5 @@ function segments(data,unlocated=[]){
  const out=[];for(const [key,events] of groups){if(new Set(events.map(e=>e.station)).size!==events.length||new Set(events.map(e=>e.time)).size!==events.length)continue;events.sort((a,b)=>a.time-b.time);function missing(a,end){if(end>a.time)unlocated.push({key,number:a.number,from:a.from,to:a.to,station:a.station,start:a.time,end})}function add(a,b,quality){const hours=(b.time-a.time)/3600000,km=111*Math.hypot(b.place.lat-a.place.lat,(b.place.lon-a.place.lon)*Math.cos(a.place.lat*Math.PI/180));if(hours<=0||km<5||km/hours>160){missing(a,b.time);return}out.push({key,number:a.number,from:a.from,to:a.to,a:a.place,b:b.place,start:a.time,end:b.time,arrival:a.target,quality})}for(let i=1;i<events.length;i++)add(events[i-1],events[i],'matched');const last=events[events.length-1],destination=destinations.get(name(last.to));if(destination)add(last,{place:destination,time:last.target},'coarse');else missing(last,last.target)}
  return out;
 }
-if(typeof module!=='undefined')module.exports={segments,position,pathAvailable,dayStart,advance,advanceAcross,capPresent,name};else root.trajectory={segments,position,pathAvailable,dayStart,advance,advanceAcross,capPresent,name};
+if(typeof module!=='undefined')module.exports={segments,position,pathAvailable,dayStart,advance,advanceAcross,capPresent,name,direction};else root.trajectory={segments,position,pathAvailable,dayStart,advance,advanceAcross,capPresent,name,direction};
 })(typeof window!=='undefined'?window:globalThis);
